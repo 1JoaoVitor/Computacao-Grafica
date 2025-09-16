@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>WebGL Robot</title>
+      <style>
+         body {
+            margin: 20px;
+            padding: 0;
+            background-color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+         }
+         h1 {
+            color: #333;
+            margin-bottom: 30px;
+         }
+         canvas {
+            border: 1px solid #999;
+            background-color: black;
+         }
+         h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #555;
+            font-size: 14px;
+         }
+      </style>
+   </head>
+   <body>
+      <h1>WebGL Robot and Flower</h1>
+
+      <div class="canvas-container">
+         <div>
+            <h3>Robot</h3>
+            <canvas id="glCanvasRobot" width="400" height="400"></canvas>
+         </div>
+         <div>
+            <h3>Flower</h3>
+            <canvas id="glCanvasFlower" width="400" height="400"></canvas>
+         </div>
+         <div>
+            <h3>Car</h3>
+            <canvas id="glCanvasCar" width="400" height="400"></canvas>
+         </div>
+         <div>
+            <h3>Pinwheel</h3>
+            <canvas id="glCanvasPinwhell" width="400" height="400"></canvas>
+         </div>
+      </div>
+
+      <script src="robot.js"></script>
+      <script src="flower.js"></script>
+      <script src="car.js"></script>
+      <script src="pinwhell.js"></script>
+   </body>
+</html>
