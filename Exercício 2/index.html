@@ -18,13 +18,17 @@
          }
          canvas {
             border: 1px solid #999;
-            background-color: black;
          }
          h3 {
             margin-top: 0;
             margin-bottom: 10px;
             color: #555;
             font-size: 14px;
+         }
+         .canvas-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
          }
       </style>
    </head>
@@ -33,11 +37,21 @@
 
       <div class="canvas-container">
          <div>
-            <h3>Clique em dois pontos</h3>
+            <h3>Exercício 1.1: Reta e Cores</h3>
             <canvas id="glBresenham1" width="400" height="400"></canvas>
+         </div>
+         <div>
+            <h3>Exercício 1.2: Reta e Triângulo</h3>
+            <canvas id="glBresenham2" width="400" height="400"></canvas>
          </div>
       </div>
 
       <script src="bresenham1.js"></script>
+      <script src="bresenham2.js"></script>
+
+      <script>
+         initCanvas1();
+         initCanvas2();
+      </script>
    </body>
 </html>

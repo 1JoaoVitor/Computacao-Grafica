@@ -1,4 +1,4 @@
-function initCanvas1() {
+function initCanvas2() {
    const vertexShaderSource = `
    attribute vec2 a_position;
    void main() {
@@ -110,7 +110,7 @@ function initCanvas1() {
    }
 
    function main() {
-      const canvas = document.getElementById("glBresenham1");
+      const canvas = document.getElementById("glBresenham2");
       const gl = canvas.getContext("webgl");
 
       if (!gl) {
@@ -153,6 +153,7 @@ function initCanvas1() {
          0
       );
 
+      let drawChoice = "r";
       let clickPoints = [];
       let lastDrawnPoints = [];
       let currentColor = [1.0, 0.0, 0.0];
@@ -166,23 +167,25 @@ function initCanvas1() {
 
          clickPoints.push(x_pixel, y_pixel);
 
-         if (clickPoints.length === 4) {
-            const p1x = clickPoints[0];
-            const p1y = clickPoints[1];
-            const p2x = clickPoints[2];
-            const p2y = clickPoints[3];
+         if (drawChoice === "r" && clickPoints.length === 4) {
+            const [p1x, p1y, p2x, p2y] = clickPoints;
 
             const linePixels = bresenham(p1x, p1y, p2x, p2y);
+            const webglPoints = normalizePoints(linePixels);
+            lastDrawnPoints = webglPoints;
+            drawLine(lastDrawnPoints);
+            clickPoints = [];
+         } else if (drawChoice === "t" && clickPoints.length === 6) {
+            const [p1x, p1y, p2x, p2y, p3x, p3y] = clickPoints;
 
-            const webglPoints = [];
-            for (let i = 0; i < linePixels.length; i += 2) {
-               const x = linePixels[i];
-               const y = linePixels[i + 1];
-               const webglX = (x / gl.canvas.width) * 2 - 1;
-               const webglY =
-                  ((gl.canvas.height - y) / gl.canvas.height) * 2 - 1;
-               webglPoints.push(webglX, webglY);
-            }
+            const trianglePixels = [
+               ...bresenham(p1x, p1y, p2x, p2y),
+               ...bresenham(p1x, p1y, p3x, p3y),
+               ...bresenham(p2x, p2y, p3x, p3y),
+            ];
+
+            const webglPoints = normalizePoints(trianglePixels);
+
             lastDrawnPoints = webglPoints;
             drawLine(lastDrawnPoints);
             clickPoints = [];
@@ -190,7 +193,21 @@ function initCanvas1() {
       }
 
       function keyDown(event) {
-         switch (event.key) {
+         const key = event.key.toLowerCase();
+         if (key === "t" || key === "r") {
+            if (drawChoice !== key) {
+               drawChoice = key;
+               clickPoints = [];
+               lastDrawnPoints = [];
+               gl.clear(gl.COLOR_BUFFER_BIT);
+            }
+         } else {
+            changeColor(event.key);
+         }
+      }
+
+      function changeColor(key) {
+         switch (key) {
             case "0":
                currentColor = [1.0, 0.5, 1.0];
                break;
@@ -243,6 +260,19 @@ function initCanvas1() {
          const count = pointsData.length / 2;
          gl.drawArrays(primitiveType, offset, count);
       }
+
+      function normalizePoints(linePixels) {
+         const webglPoints = [];
+         for (let i = 0; i < linePixels.length; i += 2) {
+            const x = linePixels[i];
+            const y = linePixels[i + 1];
+            const webglX = (x / gl.canvas.width) * 2 - 1;
+            const webglY = ((gl.canvas.height - y) / gl.canvas.height) * 2 - 1;
+            webglPoints.push(webglX, webglY);
+         }
+         return webglPoints;
+      }
    }
+
    main();
 }
