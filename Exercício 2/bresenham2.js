@@ -1,9 +1,11 @@
 function initCanvas2() {
    const vertexShaderSource = `
    attribute vec2 a_position;
+   uniform float u_pointSize;
+
    void main() {
       gl_Position = vec4(a_position, 0, 1);
-      gl_PointSize = 2.0;
+      gl_PointSize = u_pointSize;
    }
    `;
    const fragmentShaderSource = `
@@ -135,6 +137,10 @@ function initCanvas2() {
          "a_position"
       );
       const colorUniformLocation = gl.getUniformLocation(program, "u_color");
+      const pointSizeUniformLocation = gl.getUniformLocation(
+         program,
+         "u_pointSize"
+      );
       const positionBuffer = gl.createBuffer();
 
       gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
@@ -154,9 +160,12 @@ function initCanvas2() {
       );
 
       let drawChoice = "r";
+      let changeChoice = "k";
       let clickPoints = [];
       let lastDrawnPoints = [];
       let currentColor = [1.0, 0.0, 0.0];
+      let currentThickness = 2.0;
+
       canvas.addEventListener("mousedown", mouseClick);
       window.addEventListener("keydown", keyDown, false);
 
@@ -201,8 +210,16 @@ function initCanvas2() {
                lastDrawnPoints = [];
                gl.clear(gl.COLOR_BUFFER_BIT);
             }
-         } else {
+         } else if (key === "k") {
+            changeChoice = "k";
+         } else if (key === "e") {
+            changeChoice = "e";
+         }
+
+         if (changeChoice === "k") {
             changeColor(event.key);
+         } else {
+            changeThickness(event.key);
          }
       }
 
@@ -244,6 +261,14 @@ function initCanvas2() {
          }
       }
 
+      function changeThickness(key) {
+         const keyNumber = parseInt(key, 10);
+         if (!isNaN(keyNumber) && keyNumber >= 1 && keyNumber <= 9) {
+            currentThickness = keyNumber;
+            if (lastDrawnPoints.length > 0) drawLine(lastDrawnPoints);
+         }
+      }
+
       function drawLine(pointsData) {
          gl.clear(gl.COLOR_BUFFER_BIT);
          gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -254,6 +279,7 @@ function initCanvas2() {
          );
 
          gl.uniform3fv(colorUniformLocation, currentColor);
+         gl.uniform1f(pointSizeUniformLocation, currentThickness);
 
          const primitiveType = gl.POINTS;
          const offset = 0;
