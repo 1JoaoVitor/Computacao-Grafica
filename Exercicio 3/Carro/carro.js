@@ -1,6 +1,4 @@
-// carro.js - Lógica principal para desenhar e animar o carro em WebGL.
 
-// Inicia o programa principal quando a página carrega
 main();
 
 function main() {
@@ -14,7 +12,6 @@ function main() {
       return;
    }
 
-   // --- SHADERS ---
    const vsSource = `
         attribute vec2 a_position;
         uniform mat3 u_matrix;
@@ -33,12 +30,12 @@ function main() {
         }
     `;
 
-   // Compila e linka os shaders em um programa
+
    const vertexShader = createShader(gl, gl.VERTEX_SHADER, vsSource);
    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fsSource);
    const program = createProgram(gl, vertexShader, fragmentShader);
 
-   // --- OBTENDO LOCALIZAÇÕES ---
+
    const positionAttributeLocation = gl.getAttribLocation(
       program,
       "a_position"
@@ -49,39 +46,37 @@ function main() {
    let matrix = m3.identity();
    gl.uniformMatrix3fv(matrixUniformLocation, false, matrix);
 
-   // --- GEOMETRIAS ---
    const geometries = defineGeometries(gl);
 
-   // --- ESTADO DA ANIMAÇÃO ---
-   let carX = -1.2; // Posição inicial fora da tela à esquerda
-   let carY = -0.3; // Posição Y do carro
-   let wheelAngle = 0; // Ângulo de rotação das rodas
 
-   // --- LOOP DE RENDERIZAÇÃO ---
+   let carX = -1.2; 
+   let carY = -0.3; 
+   let wheelAngle = 0;
+
+
    function drawScene() {
-      // Redimensiona o canvas para preencher a tela inteira
+    
       gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
-      // Limpa o canvas com uma cor de fundo
-      gl.clearColor(0.8, 0.9, 1.0, 1.0); // Azul claro (céu)
+      
+      gl.clearColor(0.8, 0.9, 1.0, 1.0); 
       gl.clear(gl.COLOR_BUFFER_BIT);
 
-      // Diz ao WebGL para usar nosso programa (shaders)
+      
       gl.useProgram(program);
 
-      // --- LÓGICA DE ANIMAÇÃO ---
+
       carX += 0.005;
       if (carX > 1.2) {
-         // Reinicia a posição quando o carro sai da tela
+         
          carX = -1.2;
       }
-      wheelAngle -= 0.1; // Rotaciona as rodas
+      wheelAngle -= 0.1;
 
-      // --- MATRIZES DE TRANSFORMAÇÃO ---
+    
       const carMatrix = m3.translation(carX, carY);
 
-      // --- DESENHANDO AS PARTES ---
-      // 1. Chassi (vermelho)
+     
       drawPart(
          geometries.chassi,
          [1, 0.2, 0.2, 1],
@@ -89,11 +84,10 @@ function main() {
          gl.TRIANGLE_STRIP
       );
 
-      // 2. Teto (vermelho) - Já está na posição correta em relação ao chassi
+      
       drawPart(geometries.teto, [1, 0.2, 0.2, 1], carMatrix, gl.TRIANGLE_STRIP);
 
-      // 3. Roda Traseira (preta)
-      // A ordem da multiplicação é importante: primeiro rotaciona, depois translada para a posição relativa, e depois move com o carro.
+
       let wheelMatrix1 = m3.multiply(
          m3.translation(-0.12, -0.1),
          m3.rotation(wheelAngle)
@@ -106,7 +100,7 @@ function main() {
          gl.TRIANGLE_FAN
       );
 
-      // 4. Roda Dianteira (preta)
+
       let wheelMatrix2 = m3.multiply(
          m3.translation(0.12, -0.1),
          m3.rotation(wheelAngle)
@@ -119,11 +113,10 @@ function main() {
          gl.TRIANGLE_FAN
       );
 
-      // Chama a si mesma para o próximo frame, criando o loop de animação
       requestAnimationFrame(drawScene);
    }
 
-   // Função auxiliar para desenhar uma parte do carro
+
    const drawPart = (geometry, color, transformationMatrix, primitiveType) => {
       gl.bindBuffer(gl.ARRAY_BUFFER, geometry.buffer);
 
@@ -143,11 +136,10 @@ function main() {
       gl.drawArrays(primitiveType, 0, geometry.vertexCount);
    };
 
-   // Inicia a animação
    requestAnimationFrame(drawScene);
 }
 
-// --- FUNÇÕES AUXILIARES ---
+
 
 function createShader(gl, type, source) {
    const shader = gl.createShader(type);
@@ -173,7 +165,7 @@ function createProgram(gl, vertexShader, fragmentShader) {
 }
 
 function defineGeometries(gl) {
-   // Chassi do carro
+  
    const chassiBuffer = gl.createBuffer();
    gl.bindBuffer(gl.ARRAY_BUFFER, chassiBuffer);
    gl.bufferData(
@@ -182,7 +174,7 @@ function defineGeometries(gl) {
       gl.STATIC_DRAW
    );
 
-   // Teto do carro
+
    const tetoBuffer = gl.createBuffer();
    gl.bindBuffer(gl.ARRAY_BUFFER, tetoBuffer);
    gl.bufferData(
@@ -191,12 +183,12 @@ function defineGeometries(gl) {
       gl.STATIC_DRAW
    );
 
-   // Roda
+
    const rodaBuffer = gl.createBuffer();
    gl.bindBuffer(gl.ARRAY_BUFFER, rodaBuffer);
    const RODA_RAIO = 0.05;
    const RODA_SEGMENTOS = 16;
-   const rodaVertices = [0, 0]; // Centro do fã de triângulos
+   const rodaVertices = [0, 0];
    for (let i = 0; i <= RODA_SEGMENTOS; i++) {
       const angulo = (i / RODA_SEGMENTOS) * 2 * Math.PI;
       rodaVertices.push(

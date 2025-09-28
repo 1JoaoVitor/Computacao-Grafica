@@ -1,6 +1,3 @@
-// carro.js - Lógica principal para desenhar e animar o carro em WebGL.
-
-// Inicia o programa principal quando a página carrega
 main();
 
 function main() {
@@ -14,7 +11,6 @@ function main() {
       return;
    }
 
-   // --- SHADERS ---
    const vsSource = `
         attribute vec2 a_position;
         uniform mat3 u_matrix;
@@ -37,7 +33,6 @@ function main() {
    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fsSource);
    const program = createProgram(gl, vertexShader, fragmentShader);
 
-   // --- OBTENDO LOCALIZAÇÕES ---
    const positionAttributeLocation = gl.getAttribLocation(
       program,
       "a_position"
@@ -48,13 +43,10 @@ function main() {
    let matrix = m3.identity();
    gl.uniformMatrix3fv(matrixUniformLocation, false, matrix);
 
-   // --- GEOMETRIAS ---
    const geometries = defineGeometries(gl);
 
    let tempo = 0;
 
-   // --- DEFININDO AS CORES ---
-   // Um array com as 4 cores que queremos para as pás
    const coresDasPas = [
       [1.0, 0.2, 0.2, 1.0], // Vermelho
       [1.0, 1.0, 0.2, 1.0], // Amarelo
@@ -102,7 +94,6 @@ function main() {
       requestAnimationFrame(drawScene);
    }
 
-   // Função auxiliar para desenhar uma parte do carro
    const drawPart = (geometry, color, transformationMatrix, primitiveType) => {
       gl.bindBuffer(gl.ARRAY_BUFFER, geometry.buffer);
 
@@ -122,12 +113,9 @@ function main() {
       gl.drawArrays(primitiveType, 0, geometry.vertexCount);
    };
 
-   // Inicia a animação
    drawScene();
    requestAnimationFrame(drawScene);
 }
-
-// --- FUNÇÕES AUXILIARES ---
 
 function createShader(gl, type, source) {
    const shader = gl.createShader(type);
@@ -158,7 +146,6 @@ function defineGeometries(gl) {
    gl.bufferData(
       gl.ARRAY_BUFFER,
       new Float32Array([
-         // Vértices para um TRIANGLE_STRIP que forma um trapézio
          0.05,
          0.05, // Ponto 1: Canto interno superior
          0.05,

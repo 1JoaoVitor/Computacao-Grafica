@@ -1,5 +1,3 @@
-// m3.js - Uma biblioteca simples para matrizes 3x3 (usadas para 2D).
-
 const m3 = {
    /**
     * Retorna uma matriz identidade 3x3.

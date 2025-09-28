@@ -1,6 +1,3 @@
-// carro.js - Lógica principal para desenhar e animar o carro em WebGL.
-
-// Inicia o programa principal quando a página carrega
 main();
 
 function main() {
@@ -14,7 +11,6 @@ function main() {
       return;
    }
 
-   // --- SHADERS ---
    const vsSource = `
         attribute vec2 a_position;
         uniform mat3 u_matrix;
@@ -37,7 +33,6 @@ function main() {
    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fsSource);
    const program = createProgram(gl, vertexShader, fragmentShader);
 
-   // --- OBTENDO LOCALIZAÇÕES ---
    const positionAttributeLocation = gl.getAttribLocation(
       program,
       "a_position"
@@ -48,12 +43,10 @@ function main() {
    let matrix = m3.identity();
    gl.uniformMatrix3fv(matrixUniformLocation, false, matrix);
 
-   // --- GEOMETRIAS ---
    const geometries = defineGeometries(gl);
 
    let tempo = 0;
 
-   // --- LOOP DE RENDERIZAÇÃO ---
    function drawScene() {
       gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
@@ -64,18 +57,12 @@ function main() {
 
       identidade = m3.identity();
 
-      // --- LÓGICA DE ANIMAÇÃO ---
-      // Incrementa nossa variável de tempo a cada quadro.
-      // Mudar este valor acelera ou desacelera a animação.
       tempo += 0.05;
 
-      // 1. Math.sin() cria uma onda suave que vai de -1 a 1.
       const oscilacao = Math.sin(tempo);
 
-      // 2. Mapeamos o valor para um intervalo mais útil para a escala.
-      // Queremos que a escala varie de 0.9 a 1.1 (ou seja, 1.0 +/- 0.1)
       const escalaBase = 1.0;
-      const amplitude = 0.03; // O quanto a escala vai variar
+      const amplitude = 0.03;
       const escalaDinamica = escalaBase + oscilacao * amplitude;
 
       drawPart(
@@ -89,17 +76,12 @@ function main() {
       for (let i = 0; i < NUM_PETALAS; i++) {
          const anguloPetala = (i / NUM_PETALAS) * 2 * Math.PI;
 
-         // Criamos a matriz de escala com o valor dinâmico que calculamos
          const matrizEscala = m3.scaling(escalaDinamica, escalaDinamica);
 
-         // Ordem das transformações: Escala -> Translação -> Rotação
-         // 1. Aplica a escala na pétala (enquanto ela está na origem)
          let matrix = matrizEscala;
 
-         // 2. Move a pétala já escalada para fora do centro
          matrix = m3.multiply(m3.translation(0, 0.15), matrix);
 
-         // 3. Rotaciona o conjunto para a posição final
          matrix = m3.multiply(m3.rotation(anguloPetala), matrix);
 
          drawPart(geometries.petala, [1, 0.3, 0.3, 1], matrix, gl.TRIANGLE_FAN);
@@ -109,7 +91,6 @@ function main() {
       requestAnimationFrame(drawScene);
    }
 
-   // Função auxiliar para desenhar uma parte do carro
    const drawPart = (geometry, color, transformationMatrix, primitiveType) => {
       gl.bindBuffer(gl.ARRAY_BUFFER, geometry.buffer);
 
@@ -129,11 +110,8 @@ function main() {
       gl.drawArrays(primitiveType, 0, geometry.vertexCount);
    };
 
-   // Inicia a animação
    requestAnimationFrame(drawScene);
 }
-
-// --- FUNÇÕES AUXILIARES ---
 
 function createShader(gl, type, source) {
    const shader = gl.createShader(type);
@@ -162,7 +140,7 @@ function defineGeometries(gl) {
    const petalaBuffer = gl.createBuffer();
    gl.bindBuffer(gl.ARRAY_BUFFER, petalaBuffer);
    const PETALA_RAIO_X = 0.08;
-   const PETALA_RAIO_Y = 0.15; // Raio Y maior para criar uma elipse
+   const PETALA_RAIO_Y = 0.15;
    const PETALA_SEGMENTOS = 16;
    const petalaVertices = [0, 0];
    for (let i = 0; i <= PETALA_SEGMENTOS; i++) {
@@ -178,7 +156,6 @@ function defineGeometries(gl) {
       gl.STATIC_DRAW
    );
 
-   // Teto do carro
    const baseBuffer = gl.createBuffer();
    gl.bindBuffer(gl.ARRAY_BUFFER, baseBuffer);
    gl.bufferData(
